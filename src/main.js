@@ -1,7 +1,9 @@
 
 let electron = require('electron')
 
-let { app, BrowserWindow } = electron
+let images = require('./images')
+
+let { app, BrowserWindow, ipcMain: ipc } = electron
 
 let mainWindow = null
 
@@ -15,8 +17,15 @@ app.on('ready', _ => {
     mainWindow.loadURL(`file://${__dirname}/capture.html`)
     
     mainWindow.openDevTools()
+
+    images.mkdir(images.getPicturesDir(app))
+
+    app.on('closed', _ => {
+        mainWindow = null
+    })
 })
 
-app.on('closed', _ => {
-    mainWindow = null
+ipc.on('image-captured', (evt, contents) => {
+    images.save(images.getPicturesDir(app), contents)
 })
+

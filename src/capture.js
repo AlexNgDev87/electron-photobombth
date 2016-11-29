@@ -1,5 +1,9 @@
 
-const video = require('./video/video')
+const electron = require('electron')
+const countdown = require('./countdown')
+const video = require('./video')
+
+const { ipcRenderer: ipc } = electron 
 
 // we build the structure of the photo collection
 function formatImgTag(doc, bytes) {
@@ -28,7 +32,13 @@ window.addEventListener('DOMContentLoaded', _ => {
     video.init(navigator, videoEl);
 
     recordEl.addEventListener('click', _ => {
-        const bytes = video.captureBytes(videoEl, ctx, canvasEl)
-        photosEl.appendChild(formatImgTag(document, bytes))
+        countdown.start(counterEl, 3, _ => {
+            const bytes = video.captureBytes(videoEl, ctx, canvasEl)
+
+            // we wanna send an event to the main process
+            ipc.send('image-captured', bytes)
+
+            photosEl.appendChild(formatImgTag(document, bytes))
+        })
     })
 })
