@@ -7,8 +7,8 @@ let mainWindow = null
 
 app.on('ready', _ => {
     mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 725,
+        width: 1440,
+        height: 900,
         resizable: false
     })
     

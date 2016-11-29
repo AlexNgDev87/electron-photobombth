@@ -69,6 +69,7 @@ body {
 
 .photo {
     flex: none;
+    float: left;
     position: relative;
     height: 84ps;
     width: 150px;

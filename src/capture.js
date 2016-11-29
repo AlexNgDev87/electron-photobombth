@@ -1,12 +1,18 @@
 
-navigator.getUserMedia = navigator.webkitGetUserMedia
+const video = require('./video/video')
 
-function handleSuccess(videoEl, stream) {
-    videoEl.src = window.URL.createObjectURL(stream);
-}
-
-function handleError(error) {
-    console.log('camera error ', error)
+// we build the structure of the photo collection
+function formatImgTag(doc, bytes) {
+    const div = doc.createElement('div')
+    div.classList.add('photo')
+    const close = doc.createElement('div')
+    close.classList.add('photoClose')
+    const img = new Image()
+    img.classList.add('photoImg')
+    img.src = bytes
+    div.appendChild(img)
+    div.appendChild(close)
+    return div
 }
 
 window.addEventListener('DOMContentLoaded', _ => {
@@ -16,19 +22,13 @@ window.addEventListener('DOMContentLoaded', _ => {
     const photosEl = document.getElementById('photosContainer')
     const counterEl = document.getElementById('counter')
     
-    // describes what media devices we're trying to capture
-    const constraints = {
-        audio: false,
-        video: {
-            mandatory: {
-                minWidth: 853,
-                minHeight: 480,
-                maxWidth: 853,
-                maxHeight: 480
-            }
-        }
-    }
-    
-    // access the webcam video
-    navigator.getUserMedia(constraints, stream => handleSuccess(videoEl, stream), handleError)
+    // initialise the canvas to a 2D context
+    const ctx = canvasEl.getContext('2d')
+
+    video.init(navigator, videoEl);
+
+    recordEl.addEventListener('click', _ => {
+        const bytes = video.captureBytes(videoEl, ctx, canvasEl)
+        photosEl.appendChild(formatImgTag(document, bytes))
+    })
 })
